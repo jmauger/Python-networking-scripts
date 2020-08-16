@@ -1,0 +1,41 @@
+# This python script requests input of a multicast group address and outputs the mac address for that group
+
+#  set variable for mcast OUI (/25)
+mcast_mac_pre = '00000001.00000000.01011110.0'
+
+# ask user to input mcast group address
+mcast_group_input = input('Please input your multicast group address:')
+
+# turn input data into binary format
+m_gp_bin = str('.'.join([bin(int(x)+256)[3:] for x in mcast_group_input.split('.')]))
+
+# chop off the last 23 binary chars
+gp_mac = str(m_gp_bin[10:35])
+
+# concatenate the OUI and the group extension
+mcast_mac_bin_result = mcast_mac_pre + gp_mac
+
+# remove the dots from the binary string
+octet1 = str(mcast_mac_bin_result[0:8])
+octet2 = str(mcast_mac_bin_result[9:17])
+octet3 = str(mcast_mac_bin_result[18:26])
+octet4 = str(mcast_mac_bin_result[27:35])
+octet5 = str(mcast_mac_bin_result[36:44])
+octet6 = str(mcast_mac_bin_result[45:53])
+
+mcast_mbr_nodots = octet1 + octet2 + octet3 + octet4 + octet5 + octet6
+
+# turn binary string to hex string
+decimal_representation = int(mcast_mbr_nodots, 2)
+hexadecimal_string = hex(decimal_representation)
+
+# remove the hex-x
+op_mac_hex_nodots = str(hexadecimal_string[0]) + str(hexadecimal_string[2:13])
+
+# put cisco mac format dots back in
+final_op_mac = str(op_mac_hex_nodots[0:4]) + '.' + str(op_mac_hex_nodots[4:8]) + '.' + str(op_mac_hex_nodots[8:12])
+
+# output the full mcast group mac
+print(final_op_mac)
+
+
